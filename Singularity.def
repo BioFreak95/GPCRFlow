@@ -24,16 +24,63 @@ From: nvcr.io/nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu18.04
         build-essential \
         vim \
         g++ \
-        gfortran && \
+        gfortran \
+        cmake \
+        libsqlite3-dev \
+        sip-dev \
+        libtiff-dev \
+        libfftw3-dev \
+        libeigen3-dev \
+        libboost-all-dev \
+        libpng-dev \
+        doxygen \
+        swig \
+        clustalw \
+        cython3 \
+        voronota && \
         rm -rf /var/lib/apt/lists/* && \
         apt-get autoremove -y && \
         apt-get clean
+
+    # Set up arguments
+    export OPENSTRUCTURE_VERSION="2.7.0"
+    export SRC_FOLDER="/usr/local/src"
+    export CPUS_FOR_MAKE=2
+    export OPENMM_VERSION="7.7.0"
+    export OPENMM_INCLUDE_PATH="/usr/local/openmm/include/"
+    export OPENMM_LIB_PATH="/usr/local/openmm/lib/"
+
+    # INSTALL OST
+    cd ${SRC_FOLDER} && \
+    wget -O openstructure-${OPENSTRUCTURE_VERSION}.tar.gz -nc https://git.scicore.unibas.ch/schwede/openstructure/-/archive/${OPENSTRUCTURE_VERSION}/openstructure-${OPENSTRUCTURE_VERSION}.tar.gz && \
+    mkdir openstructure-${OPENSTRUCTURE_VERSION} && \
+    tar xf openstructure-${OPENSTRUCTURE_VERSION}.tar.gz -C ${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION} --strip-components=1 && \
+    mkdir -p ${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}/build && \
+    cd ${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}/build && \
+    cmake .. -DOPTIMIZE=ON \
+             -DENABLE_MM=ON \
+             -DCOMPILE_TMTOOLS=1 \
+             -DOPEN_MM_LIBRARY=$OPENMM_LIB_PATH/libOpenMM.so \
+             -DOPEN_MM_INCLUDE_DIR=$OPENMM_INCLUDE_PATH \
+             -DOPEN_MM_PLUGIN_DIR=$OPENMM_LIB_PATH/plugins \
+             -DENABLE_GFX=ON \
+             -DENABLE_GUI=OFF \
+             -DENABLE_INFO=OFF \
+             -DCMAKE_C_FLAGS="-isystem /usr/include/boost/ -isystem ${OPENMM_INCLUDE_PATH}/include" \
+             -DCMAKE_CXX_FLAGS="-isystem /usr/include/boost/ -isystem ${OPENMM_INCLUDE_PATH}/include" && \
+    make -j ${CPUS_FOR_MAKE} && \
+    wget ftp://ftp.wwpdb.org/pub/pdb/data/monomers/components.cif.gz && \
+    stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb && stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm && \
+    cmake .. -DCOMPOUND_LIB=${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}/build/compounds.chemlib && \
+    make -j ${CPUS_FOR_MAKE} && make check && make install && \
+    rm ${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}.tar.gz && \
+    rm -rf ${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}
 
     # Install TMscore
     wget https://zhanggroup.org/TM-score/TMscore.cpp
     g++ -O3 -ffast-math -lm -o /usr/local/bin/TMscore TMscore.cpp
     rm TMscore.cpp
-    
+
     # Install Miniconda
     wget -q -P /tmp -O /tmp/miniconda.sh \
         "https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.2-0-Linux-$(uname -m).sh" && \
@@ -77,6 +124,7 @@ From: nvcr.io/nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu18.04
 %environment
     export PATH=/opt/conda/bin:$PATH
     export PATH=/usr/local/bin:$PATH
+    export OST_ROOT="/usr/local"
 
 %runscript
     exec "$@"
