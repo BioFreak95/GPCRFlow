@@ -46,9 +46,6 @@ From: nvcr.io/nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu18.04
     export OPENSTRUCTURE_VERSION="2.7.0"
     export SRC_FOLDER="/usr/local/src"
     export CPUS_FOR_MAKE=2
-    export OPENMM_VERSION="7.7.0"
-    export OPENMM_INCLUDE_PATH="/usr/local/openmm/include/"
-    export OPENMM_LIB_PATH="/usr/local/openmm/lib/"
 
     # INSTALL OST
     cd ${SRC_FOLDER} && \
@@ -58,11 +55,8 @@ From: nvcr.io/nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu18.04
     mkdir -p ${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}/build && \
     cd ${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}/build && \
     cmake .. -DOPTIMIZE=ON \
-             -DENABLE_MM=ON \
+             -DENABLE_MM=OFF \
              -DCOMPILE_TMTOOLS=1 \
-             -DOPEN_MM_LIBRARY=$OPENMM_LIB_PATH/libOpenMM.so \
-             -DOPEN_MM_INCLUDE_DIR=$OPENMM_INCLUDE_PATH \
-             -DOPEN_MM_PLUGIN_DIR=$OPENMM_LIB_PATH/plugins \
              -DENABLE_GFX=ON \
              -DENABLE_GUI=OFF \
              -DENABLE_INFO=OFF \
