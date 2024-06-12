@@ -29,6 +29,11 @@ From: nvcr.io/nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu18.04
         apt-get autoremove -y && \
         apt-get clean
 
+    # Install TMscore
+    wget https://zhanggroup.org/TM-score/TMscore.cpp
+    g++ -O3 -ffast-math -lm -o /usr/local/bin/TMscore TMscore.cpp
+    rm TMscore.cpp
+    
     # Install Miniconda
     wget -q -P /tmp -O /tmp/miniconda.sh \
         "https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.2-0-Linux-$(uname -m).sh" && \
@@ -67,11 +72,7 @@ From: nvcr.io/nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu18.04
     python -m pip install biopython==1.79 dm-tree==0.1.6 modelcif==0.7 ml-collections==0.1.0 scipy==1.7.3 absl-py einops && \
     python -m pip install pytorch_lightning==2.0.4 fair-esm mdtraj wandb
 
-    # Install TMscore
-    wget http://zhanglab.ccmb.med.umich.edu/TM-score/TMscore.tar.gz
-    tar -xzf TMscore.tar.gz
-    mv TMscore /usr/local/bin/
-    rm TMscore.tar.gz
+    
 
 %environment
     export PATH=/opt/conda/bin:$PATH
