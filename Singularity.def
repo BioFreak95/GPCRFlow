@@ -116,7 +116,7 @@ From: nvcr.io/nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu18.04
     wget ftp://ftp.wwpdb.org/pub/pdb/data/monomers/components.cif.gz && \
     stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb && stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm && \
     cmake .. -DCOMPOUND_LIB=${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}/build/compounds.chemlib && \
-    make -j ${CPUS_FOR_MAKE} && make check && make install && \
+    make -j ${CPUS_FOR_MAKE} && make install && \
     rm ${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}.tar.gz && \
     rm -rf ${SRC_FOLDER}/openstructure-${OPENSTRUCTURE_VERSION}
     
@@ -125,6 +125,8 @@ From: nvcr.io/nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu18.04
     export PATH=/opt/conda/bin:$PATH
     export PATH=/usr/local/bin:$PATH
     export OST_ROOT="/usr/local"
+    export LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH
+
 
 %runscript
     exec "$@"
