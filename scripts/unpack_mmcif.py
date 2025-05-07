@@ -17,9 +17,8 @@ from openfold.data import mmcif_parsing
 pipeline = DataPipeline(template_featurizer=None)
 
 def main():
-    dirs = os.listdir(args.mmcif_dir)
-    files = [os.listdir(f"{args.mmcif_dir}/{dir}") for dir in dirs]
-    files = sum(files, [])
+    files = os.listdir(args.mmcif_dir)
+
     if args.num_workers > 1:
         p = Pool(args.num_workers)
         p.__enter__()
@@ -36,7 +35,7 @@ def main():
     df.to_csv(args.outcsv)    
     
 def unpack_mmcif(name):
-    path = f"{args.mmcif_dir}/{name[1:3]}/{name}"
+    path = f"{args.mmcif_dir}/{name}"
 
     with open(path, 'r') as f:
         mmcif_string = f.read()

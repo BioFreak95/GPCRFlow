@@ -1,6 +1,7 @@
 import pandas as pd
 import os, tqdm
 from collections import defaultdict
+import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--openfold_dir', type=str, required=True)
@@ -54,5 +55,3 @@ for seqres, sub_df in tqdm.tqdm(df.groupby('seqres')):
 
 df['msa_id'] = msa_id
 df[~df.msa_id.isnull()].set_index('name').to_csv(args.outcsv)
-
-    

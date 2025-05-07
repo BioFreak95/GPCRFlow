@@ -294,7 +294,9 @@ class ESMFold(nn.Module):
         else:
             s_s_0 = s_s_0 + self.trunk.recycle_s_norm(torch.zeros_like(s_s_0)) * 0.0
             s_z_0 = s_z_0 + self.trunk.recycle_z_norm(torch.zeros_like(s_z_0)) * 0.0
-            s_z_0 = s_z_0 + self.trunk.recycle_disto(s_z_0.new_zeros(s_z_0.shape[:-2], dtype=torch.long)) * 0.0
+            recycle_disto_out = self.trunk.recycle_disto(s_z_0.new_zeros(s_z_0.shape[:-1], dtype=torch.long))
+            print(f"This is the disto_out size: {recycle_disto_out.size()} and this is the s_z_0 shape: {s_z_0.size()}")
+            s_z_0 = s_z_0 + recycle_disto_out * 0.0
 
 
             

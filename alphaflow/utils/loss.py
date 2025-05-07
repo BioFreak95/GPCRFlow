@@ -197,6 +197,7 @@ def backbone_loss(
             eps=eps,
         )
 
+        use_clamped_fape = use_clamped_fape.view(-1)
         fape_loss = fape_loss * use_clamped_fape + unclamped_fape_loss * (
             1 - use_clamped_fape
         )

@@ -11,7 +11,10 @@ def parse_train_args():
     parser.add_argument("--ckpt", type=str, default=None)
     parser.add_argument("--restore_weights_only", action='store_true')
     parser.add_argument("--validate", action='store_true', default=False)
-    
+    parser.add_argument("--param_path", type=str, default="./")
+    parser.add_argument("--seed", type=int, default=6778)
+    parser.add_argument("--strategy", type=str, default="ddp")
+
     ## Epoch settings
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--train_epoch_len", type=int, default=40000)
@@ -59,16 +62,17 @@ def parse_train_args():
     parser.add_argument("--ckpt_freq", type=int, default=1)
     parser.add_argument("--wandb", action="store_true")
     parser.add_argument("--run_name", type=str, default="default")
-    
+    parser.add_argument("--model_dir", type=str, default="workdir")    
+
     args = parser.parse_args()
-    os.environ["MODEL_DIR"] = os.path.join("workdir", args.run_name)
+    os.environ["MODEL_DIR"] = os.path.join(args.model_dir, args.run_name)
     os.environ["WANDB_LOGGING"] = str(int(args.wandb))
-    if args.wandb:
-        if subprocess.check_output(["git", "status", "-s"]):
-            exit()
-    args.commit = (
-        subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()
-    )
+   # if args.wandb:
+   #     if subprocess.check_output(["git", "status", "-s"]):
+   #         exit()
+   # args.commit = (
+   #     subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()
+   # )
 
     return args
     

@@ -168,7 +168,12 @@ class ModelWrapper(pl.LightningModule):
         for k, v in loss_breakdown.items():
             self.log(k, [v.item()])
         for k, v in metrics.items():
-            self.log(k, [v.item()])
+            if v.numel() == 1:
+                # If it's a single element tensor
+                self.log(k, [v.item()])
+            else:
+                # If it's a batch-sized tensor, log the mean
+                self.log(k, [v.mean().item()])
 
         self.log('dur', [time.time() - self.last_log_time])
         self.last_log_time = time.time()
